@@ -12,5 +12,5 @@ if __name__ == "__main__":
     setup_database()
     
     # Create and run the login window
-    app = MainWindow("Admin")
+    app = LoginWindow()
     app.mainloop()

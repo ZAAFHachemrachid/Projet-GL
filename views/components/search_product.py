@@ -90,7 +90,7 @@ class SearchProductFrame(ctk.CTkFrame):
         list_frame.pack(fill="both", expand=True)
         
         # Create treeview
-        columns = ("ID", "Reference", "Name", "Category", "Price", "Quantity", "Actions")
+        columns = ("ID", "Reference", "Name", "Category", "Price", "Quantity")
         self.tree = ttk.Treeview(list_frame, columns=columns, show="headings")
         
         # Configure columns
@@ -101,7 +101,6 @@ class SearchProductFrame(ctk.CTkFrame):
             "Category": 100,
             "Price": 80,
             "Quantity": 80,
-            "Actions": 100
         }
         
         for col in columns:
@@ -151,9 +150,9 @@ class SearchProductFrame(ctk.CTkFrame):
             search_term = self.search_entry.get().strip()
             if search_term:
                 query += """ AND (
-                    LOWER(p.name) LIKE LOWER(%s) OR 
-                    LOWER(p.reference) LIKE LOWER(%s) OR
-                    LOWER(IFNULL(c.name, '')) LIKE LOWER(%s)
+                    LOWER(p.name) LIKE LOWER(?) OR 
+                    LOWER(p.reference) LIKE LOWER(?) OR
+                    LOWER(COALESCE(c.name, '')) LIKE LOWER(?)
                 )"""
                 search_pattern = f"%{search_term}%"
                 params.extend([search_pattern] * 3)
@@ -163,7 +162,7 @@ class SearchProductFrame(ctk.CTkFrame):
             if min_price:
                 try:
                     min_price = float(min_price)
-                    query += " AND p.price >= %s"
+                    query += " AND p.price >= ?"
                     params.append(min_price)
                 except ValueError:
                     messagebox.showwarning("Invalid Input", "Please enter a valid minimum price")
@@ -173,7 +172,7 @@ class SearchProductFrame(ctk.CTkFrame):
             if max_price:
                 try:
                     max_price = float(max_price)
-                    query += " AND p.price <= %s"
+                    query += " AND p.price <= ?"
                     params.append(max_price)
                 except ValueError:
                     messagebox.showwarning("Invalid Input", "Please enter a valid maximum price")

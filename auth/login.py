@@ -18,10 +18,12 @@ class LoginWindow(ctk.CTk):
         # Configure window
         self.title("NANEF-Login")
         self.geometry("800x700")
-        self.resizable(False, False)
         
         # Set theme background
         self.configure(fg_color="#ffffff")
+        
+        # Set close window protocol
+        self.protocol("WM_DELETE_WINDOW", self.on_closing)
 
         # Create background with pattern
         self.bg_frame = ctk.CTkFrame(self, fg_color="#ffffff")
@@ -204,26 +206,30 @@ class LoginWindow(ctk.CTk):
             return
 
         # Connect to database and verify credentials
-        with get_db_connection() as conn:
+        try:
+            conn = get_db_connection()
             cursor = conn.cursor()
-            try:
-                cursor.execute("""
-                    SELECT * FROM users 
-                    WHERE username = %s AND password = %s
-                """, (username, password))
+            
+            cursor.execute("""
+                SELECT * FROM users 
+                WHERE username = ? AND password = ?
+            """, (username, password))
+            
+            user = cursor.fetchone()
+            if user:
+                self.withdraw()  # Hide login window
+                main_app = MainWindow(username)
+                main_app.protocol("WM_DELETE_WINDOW", lambda: self.on_main_window_close(main_app))
+                main_app.mainloop()
+            else:
+                messagebox.showerror("Error", "Invalid username or password")
+                self.password_entry.delete(0, 'end')  # Clear password field
+                self.password_entry.focus()  # Focus on password field
+            
+            conn.close()
                 
-                if cursor.fetchone():
-                    self.withdraw()  # Hide login window
-                    main_app = MainWindow(username)
-                    main_app.protocol("WM_DELETE_WINDOW", lambda: self.on_main_window_close(main_app))
-                    main_app.mainloop()
-                else:
-                    messagebox.showerror("Error", "Invalid username or password")
-                    self.password_entry.delete(0, 'end')  # Clear password field
-                    self.password_entry.focus()  # Focus on password field
-                    
-            except Exception as err:
-                messagebox.showerror("Database Error", f"Error: {err}")
+        except Exception as err:
+            messagebox.showerror("Database Error", f"Error: {err}")
 
     def forgot_password_click(self):
         self.destroy()
@@ -236,6 +242,10 @@ class LoginWindow(ctk.CTk):
         from auth.register import RegisterWindow
         register = RegisterWindow()
         register.mainloop()
+
+    def on_closing(self):
+        if messagebox.askokcancel("Quit", "Do you want to quit the application?"):
+            self.quit()
 
     def on_main_window_close(self, main_window):
         main_window.destroy()

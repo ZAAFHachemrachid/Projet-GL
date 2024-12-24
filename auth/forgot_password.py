@@ -180,7 +180,7 @@ class ForgotPasswordWindow(ctk.CTk):
 
         try:
             # Check if username exists and email matches
-            cursor.execute("SELECT * FROM users WHERE username = %s", (username,))
+            cursor.execute("SELECT * FROM users WHERE username = ?", (username,))
             user = cursor.fetchone()
             
             if not user:
