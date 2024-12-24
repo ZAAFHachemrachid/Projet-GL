@@ -246,20 +246,20 @@ class RegisterWindow(ctk.CTk):
 
         try:
             # Check if username already exists
-            cursor.execute("SELECT * FROM users WHERE username = %s", (username,))
+            cursor.execute("SELECT * FROM users WHERE username = ?", (username,))
             if cursor.fetchone():
                 messagebox.showerror("Error", "Username already exists")
                 return
 
             # Check if email already exists
-            cursor.execute("SELECT * FROM users WHERE email = %s", (email,))
+            cursor.execute("SELECT * FROM users WHERE email = ?", (email,))
             if cursor.fetchone():
                 messagebox.showerror("Error", "Email already exists")
                 return
 
             # Insert new user
-            cursor.execute("INSERT INTO users (username, email, password) VALUES (%s, %s, %s)",
-                         (username, email, password))
+            cursor.execute("INSERT INTO users (username, email, password) VALUES (?, ?, ?)",
+                           (username, email, password))
             conn.commit()
             messagebox.showinfo("Success", "Registration successful! Please login.")
             self.show_login()

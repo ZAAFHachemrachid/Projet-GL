@@ -16,7 +16,7 @@ class SidebarFrame(ctk.CTkFrame):
         
         # Menu buttons
         menu_items = [
-            ("➕ Add Product", self.show_add_product),
+            ("📦 Product", self.show_product),
             ("🔍 Search Products", self.show_search_products),
             ("📁 Categories", self.show_categories),
             ("⚠️ Stock Alert", self.show_stock_alert),
@@ -36,8 +36,8 @@ class SidebarFrame(ctk.CTkFrame):
             )
             btn.pack(fill="x", pady=2)
     
-    def show_add_product(self):
-        self.show_content_callback("add_product")
+    def show_product(self):
+        self.show_content_callback("product")
     
     def show_search_products(self):
         self.show_content_callback("search_products")
