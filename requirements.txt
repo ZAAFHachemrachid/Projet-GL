@@ -1,0 +1,2 @@
+customtkinter==5.2.1
+mysql-connector-python==8.2.0
